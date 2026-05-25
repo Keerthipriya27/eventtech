@@ -1,0 +1,89 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+}
+
+/* Neon Mint theme — dark navy + forest + mint accents */
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.16 0.04 240);
+  --foreground: oklch(0.97 0.01 180);
+  --card: oklch(0.20 0.05 235);
+  --card-foreground: oklch(0.97 0.01 180);
+  --popover: oklch(0.20 0.05 235);
+  --popover-foreground: oklch(0.97 0.01 180);
+  --primary: oklch(0.82 0.18 165);
+  --primary-foreground: oklch(0.16 0.04 240);
+  --secondary: oklch(0.30 0.06 235);
+  --secondary-foreground: oklch(0.97 0.01 180);
+  --muted: oklch(0.24 0.04 235);
+  --muted-foreground: oklch(0.68 0.03 200);
+  --accent: oklch(0.45 0.15 165);
+  --accent-foreground: oklch(0.97 0.01 180);
+  --destructive: oklch(0.65 0.22 25);
+  --destructive-foreground: oklch(0.97 0.01 180);
+  --border: oklch(0.30 0.05 235);
+  --input: oklch(0.26 0.05 235);
+  --ring: oklch(0.82 0.18 165);
+  --chart-1: oklch(0.82 0.18 165);
+  --chart-2: oklch(0.70 0.15 200);
+  --chart-3: oklch(0.55 0.20 280);
+  --chart-4: oklch(0.75 0.18 90);
+  --chart-5: oklch(0.65 0.22 25);
+}
+
+.dark { color-scheme: dark; }
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body { background-color: var(--color-background); color: var(--color-foreground); font-family: ui-sans-serif, system-ui, sans-serif; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+}
+
+/* Mint glow */
+.glow-mint { box-shadow: 0 0 60px -10px oklch(0.82 0.18 165 / 0.4); }
+.bg-mesh {
+  background-image:
+    radial-gradient(at 20% 20%, oklch(0.82 0.18 165 / 0.18) 0px, transparent 50%),
+    radial-gradient(at 80% 60%, oklch(0.55 0.20 280 / 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, oklch(0.45 0.15 165 / 0.20) 0px, transparent 50%);
+}
+.text-gradient {
+  background: linear-gradient(135deg, oklch(0.82 0.18 165), oklch(0.65 0.18 200));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
