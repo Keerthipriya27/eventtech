@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { Sparkles, LogOut, Calendar, Trophy, Target, Users, Plus, Wand2, Loader2, Award, TrendingUp, Zap, BarChart3, QrCode } from "lucide-react";
 import { useServerFn } from '@tanstack/react-start'
 import { generate2fa, confirm2fa } from '@/integrations/supabase/twofactor.functions'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
