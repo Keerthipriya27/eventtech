@@ -133,8 +133,20 @@ function AuthPage() {
 
     // Supabase error object shape
     if (e?.error_description) return e.error_description;
-    if (e?.message) return String(e.message);
-    return String(e);
+
+    // If the message looks like an HTML error page, avoid showing raw HTML in the UI.
+    const msg = e?.message || String(e);
+    if (typeof msg === 'string') {
+      const lower = msg.toLowerCase();
+      if (lower.includes('<!doctype') || lower.includes('<html') || lower.includes('<body') || lower.includes('<title>')) {
+        console.error('Received HTML error from server:', msg);
+        return 'Something went wrong on our server — try again or contact support.';
+      }
+      // Truncate very long messages for UX
+      if (msg.length > 1000) return msg.slice(0, 1000) + '...';
+      return msg;
+    }
+    return String(msg);
   }
 
   return (
