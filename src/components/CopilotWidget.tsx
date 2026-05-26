@@ -47,6 +47,17 @@ export function CopilotWidget() {
       });
       if (!resp.ok || !resp.body) {
         const txt = await resp.text();
+        if (resp.status === 429) {
+          throw new Error("Copilot is temporarily rate limited. Try again in a minute.");
+        }
+
+        try {
+          const parsed = JSON.parse(txt);
+          if (parsed?.error) throw new Error(String(parsed.error));
+        } catch {
+          // fall back to raw text below
+        }
+
         throw new Error(txt || "Failed");
       }
       const reader = resp.body.getReader();
