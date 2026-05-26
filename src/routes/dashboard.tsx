@@ -14,6 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CopilotWidget } from "@/components/CopilotWidget";
 import { toast } from "sonner";
 import { Sparkles, LogOut, Calendar, Trophy, Target, Users, Plus, Wand2, Loader2, Award, TrendingUp, Zap, BarChart3, QrCode } from "lucide-react";
+import { useServerFn } from '@tanstack/react-start'
+import { generate2fa, confirm2fa } from '@/integrations/supabase/twofactor.functions'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/dashboard")({ component: Dashboard });
 
@@ -396,6 +399,36 @@ function SponsorTab({ events, profile }: any) {
 
 function PassportTab({ profile, regs, onSaved }: any) {
   const [form, setForm] = useState({ bio: profile?.bio || "", skills: profile?.skills?.join(", ") || "", company: profile?.company || "", industry: profile?.industry || "" });
+  const generate2faFn = useServerFn(generate2fa)
+  const confirm2faFn = useServerFn(confirm2fa)
+  const [show2faSetup, setShow2faSetup] = useState(false)
+  const [qrData, setQrData] = useState<string | null>(null)
+  const [pendingSecret, setPendingSecret] = useState<string | null>(null)
+  const [twoFaInput, setTwoFaInput] = useState("")
+
+  const start2fa = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return toast.error('Sign in first');
+    const res = await generate2faFn({ data: { userId: user.id, label: user.email } });
+    setQrData(res.qr);
+    setPendingSecret(res.base32);
+    setShow2faSetup(true);
+  }
+
+  const confirm2fa = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !pendingSecret) return toast.error('Missing session');
+      await confirm2faFn({ data: { userId: user.id, secret: pendingSecret, token: twoFaInput } });
+      toast.success('2FA enabled');
+      setShow2faSetup(false);
+      setQrData(null);
+      setPendingSecret(null);
+      setTwoFaInput('')
+      onSaved();
+    } catch (e: any) { toast.error(e.message || 'Invalid code'); }
+  }
+
   const save = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -417,6 +450,9 @@ function PassportTab({ profile, regs, onSaved }: any) {
             <div><Label>Industry</Label><Input value={form.industry} onChange={e => setForm({ ...form, industry: e.target.value })} /></div>
           </div>
           <Button onClick={save} className="w-full">Save Passport</Button>
+          <div className="mt-3">
+            <Button variant="ghost" onClick={start2fa} className="w-full">Enable Two-Factor Authentication (TOTP)</Button>
+          </div>
         </div>
       </Card>
       <Card className="p-6 bg-card border-border">
@@ -435,6 +471,22 @@ function PassportTab({ profile, regs, onSaved }: any) {
           {regs.slice(0, 5).map((r: any) => <div key={r.id} className="text-xs text-muted-foreground">📜 {r.events?.title}</div>)}
         </div>
       </Card>
+      <Dialog open={show2faSetup} onOpenChange={setShow2faSetup}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enable Two-Factor Authentication</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {qrData ? <img src={qrData} alt="QR code" className="mx-auto" /> : <p>Generating QR...</p>}
+            <p className="text-sm">Scan the QR code with your authenticator app, then enter the 6-digit code below to confirm.</p>
+            <Input value={twoFaInput} onChange={(e) => setTwoFaInput(e.target.value)} placeholder="123456" />
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => { setShow2faSetup(false); setQrData(null); setPendingSecret(null); }}>Cancel</Button>
+              <Button onClick={confirm2fa}>Confirm</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

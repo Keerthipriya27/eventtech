@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { serverSignUp } from "@/integrations/supabase/auth.functions";
+import { generate2fa, verify2fa } from "@/integrations/supabase/twofactor.functions";
 
 export const Route = createFileRoute("/auth")({ component: AuthPage });
 
@@ -24,6 +26,9 @@ function AuthPage() {
   const [role, setRole] = useState<"organizer" | "volunteer" | "sponsor" | "participant">("participant");
   const [authError, setAuthError] = useState("");
   const [pwScore, setPwScore] = useState(0);
+  const [show2FAModal, setShow2FAModal] = useState(false);
+  const [twoFaCode, setTwoFaCode] = useState("");
+  const verify2faFn = useServerFn(verify2fa);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -65,13 +70,36 @@ function AuthPage() {
       if (!email.trim().toLowerCase().endsWith('@gmail.com')) throw new Error('Email must be a @gmail.com address');
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      toast.success("Welcome back!");
+      // if user has 2FA enabled, prompt for code
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.user_metadata?.totp_enabled) {
+        setShow2FAModal(true);
+        // keep user signed in temporarily; verification required to proceed
+      } else {
+        toast.success("Welcome back!");
+      }
     } catch (e: any) {
       const msg = formatError(e);
       setAuthError(msg);
       toast.error(msg);
     } finally { setLoading(false); }
   };
+
+  const submit2fa = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No active session');
+      await verify2faFn({ data: { userId: user.id, token: twoFaCode } });
+      setShow2FAModal(false);
+      toast.success('2FA verified — welcome!');
+      // navigate to dashboard
+      navigate({ to: '/dashboard' });
+    } catch (e: any) {
+      toast.error(e.message || 'Invalid 2FA code');
+      await supabase.auth.signOut();
+      setShow2FAModal(false);
+    }
+  }
 
   function validatePassword(pw: string) {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
@@ -163,6 +191,21 @@ function AuthPage() {
           </TabsContent>
         </Tabs>
       </Card>
+      <Dialog open={show2FAModal} onOpenChange={setShow2FAModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Two-Factor Authentication</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm">Enter the code from your authenticator app to finish signing in.</p>
+            <Input value={twoFaCode} onChange={(e) => setTwoFaCode(e.target.value)} placeholder="123456" />
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={async () => { await supabase.auth.signOut(); setShow2FAModal(false); }}>Cancel</Button>
+              <Button onClick={submit2fa}>Verify</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
