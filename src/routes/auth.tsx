@@ -23,6 +23,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState<"organizer" | "volunteer" | "sponsor" | "participant">("participant");
   const [authError, setAuthError] = useState("");
+  const [pwScore, setPwScore] = useState(0);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -40,6 +41,12 @@ function AuthPage() {
     setLoading(true);
     setAuthError("");
     try {
+      // client-side validation
+      const emailOk = email.trim().toLowerCase().endsWith('@gmail.com');
+      if (!emailOk) throw new Error('Email must be a @gmail.com address');
+      const pwOk = validatePassword(password);
+      if (!pwOk.ok) throw new Error(pwOk.message);
+
       await serverSignUpFn({ data: { email, password, fullName, role } });
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -55,6 +62,7 @@ function AuthPage() {
     setLoading(true);
     setAuthError("");
     try {
+      if (!email.trim().toLowerCase().endsWith('@gmail.com')) throw new Error('Email must be a @gmail.com address');
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       toast.success("Welcome back!");
@@ -64,6 +72,26 @@ function AuthPage() {
       toast.error(msg);
     } finally { setLoading(false); }
   };
+
+  function validatePassword(pw: string) {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
+    if (!pw) return { ok: false, message: 'Password is required' };
+    if (pw.length < 10) return { ok: false, message: 'Password must be at least 10 characters' };
+    if (!regex.test(pw)) return { ok: false, message: 'Password must include upper, lower, number, and special character' };
+    return { ok: true };
+  }
+
+  function onPasswordChange(v: string) {
+    setPassword(v);
+    // simple scoring
+    let score = 0;
+    if (v.length >= 10) score += 2;
+    if (/[A-Z]/.test(v)) score += 1;
+    if (/[a-z]/.test(v)) score += 1;
+    if (/\d/.test(v)) score += 1;
+    if (/[^A-Za-z0-9]/.test(v)) score += 1;
+    setPwScore(score);
+  }
 
   function formatError(e: any) {
     try {
@@ -107,7 +135,17 @@ function AuthPage() {
           <TabsContent value="signup" className="space-y-4">
             <div><Label>Full name</Label><Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jane Doe" /></div>
             <div><Label>Email</Label><Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></div>
-            <div><Label>Password</Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+            <div><Label>Password</Label><Input type="password" value={password} onChange={(e) => onPasswordChange(e.target.value)} /></div>
+            <div className="text-xs text-muted-foreground">
+              <div>Password strength: {pwScore}/6</div>
+              <ul className="list-disc ml-4">
+                <li>{password.length >= 10 ? '✓' : '✗'} At least 10 characters</li>
+                <li>{/[A-Z]/.test(password) ? '✓' : '✗'} One uppercase letter</li>
+                <li>{/[a-z]/.test(password) ? '✓' : '✗'} One lowercase letter</li>
+                <li>{/\d/.test(password) ? '✓' : '✗'} One number</li>
+                <li>{/[^A-Za-z0-9]/.test(password) ? '✓' : '✗'} One special character</li>
+              </ul>
+            </div>
             {authError && <p className="text-sm text-red-400">{authError}</p>}
             <div>
               <Label>I am a...</Label>

@@ -65,6 +65,10 @@ npm run dev
 - Never commit `.env` or secret keys. Rotate any keys you accidentally committed earlier.
 - `SUPABASE_SERVICE_ROLE_KEY` must only be used on server-side functions.
 
+**Password & Email policy**
+- Passwords must be at least 10 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.
+- For this deployment, signups are restricted to `@gmail.com` addresses only. This is enforced client-side and server-side.
+
 **Testing the main flows**
 - Sign up (uses server-side admin create user when available)
 - Create an event (Organizers) — the dashboard provides a modal to create events. The `start_date` field accepts `datetime-local` and is normalized to an ISO timestamp.

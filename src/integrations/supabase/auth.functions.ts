@@ -2,10 +2,12 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { supabaseAdmin } from './client.server'
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{10,}$/;
+
 const signUpSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  fullName: z.string().min(1),
+  email: z.string().email().refine((e) => e.endsWith('@gmail.com'), { message: 'Email must be a @gmail.com address' }),
+  password: z.string().min(10).regex(passwordRegex, { message: 'Password must be at least 10 characters and include upper, lower, number, and special char' }),
+  fullName: z.string().min(2),
   role: z.enum(['organizer', 'volunteer', 'sponsor', 'participant']),
 })
 
