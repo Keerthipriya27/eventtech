@@ -39,36 +39,36 @@ function Dashboard() {
 
   async function load() {
     setLoading(true);
-    try {
-      const { data: { user: u } } = await supabase.auth.getUser();
-      if (!u) {
-        navigate({ to: "/auth" });
-        return;
+      try {
+        const { data: { user: u } } = await supabase.auth.getUser();
+        if (!u) {
+          navigate({ to: "/auth" });
+          return;
+        }
+
+        setUser(u);
+        const [{ data: prof }, { data: ev }, { data: me }, { data: rg }, { data: tk }, { data: lb }] = await Promise.all([
+          supabase.from("profiles").select("*").eq("id", u.id).maybeSingle(),
+          supabase.from("events").select("*").order("created_at", { ascending: false }).limit(20),
+          supabase.from("events").select("*").eq("organizer_id", u.id).order("created_at", { ascending: false }),
+          supabase.from("registrations").select("*, events(*)").eq("user_id", u.id),
+          supabase.from("volunteer_tasks").select("*, events(title)").or(`assigned_to.eq.${u.id},assigned_to.is.null`).limit(20),
+          supabase.from("profiles").select("full_name, xp, level, badges").order("xp", { ascending: false }).limit(10),
+        ]);
+
+        setProfile(prof);
+        setRoles([u.user_metadata?.role].filter(Boolean));
+        setEvents(ev || []);
+        setMyEvents(me || []);
+        setRegs(rg || []);
+        setTasks(tk || []);
+        setLeaderboard(lb || []);
+      } catch (error: any) {
+        toast.error(error?.message || "Failed to load dashboard");
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-
-      setUser(u);
-      const [{ data: prof }, { data: ev }, { data: me }, { data: rg }, { data: tk }, { data: lb }] = await Promise.all([
-        supabase.from("profiles").select("*").eq("id", u.id).maybeSingle(),
-        supabase.from("events").select("*").order("created_at", { ascending: false }).limit(20),
-        supabase.from("events").select("*").eq("organizer_id", u.id).order("created_at", { ascending: false }),
-        supabase.from("registrations").select("*, events(*)").eq("user_id", u.id),
-        supabase.from("volunteer_tasks").select("*, events(title)").or(`assigned_to.eq.${u.id},assigned_to.is.null`).limit(20),
-        supabase.from("profiles").select("full_name, xp, level, badges").order("xp", { ascending: false }).limit(10),
-      ]);
-
-      setProfile(prof);
-      setRoles([u.user_metadata?.role].filter(Boolean));
-      setEvents(ev || []);
-      setMyEvents(me || []);
-      setRegs(rg || []);
-      setTasks(tk || []);
-      setLeaderboard(lb || []);
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to load dashboard");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
   }
 
   const logout = async () => { await supabase.auth.signOut(); navigate({ to: "/" }); };
@@ -187,11 +187,17 @@ function OrganizeTab({ myEvents, userId, onRefresh }: any) {
   const [aiResult, setAiResult] = useState<any>(null);
 
   const create = async () => {
-    const { error } = await supabase.from("events").insert({
-      ...form, organizer_id: userId, status: "published",
+    const payload = {
+      ...form,
+      // convert empty date string to null and normalize to ISO if present
+      start_date: form.start_date ? new Date(form.start_date).toISOString() : null,
+      organizer_id: userId,
+      status: "published",
       intelligence_score: aiResult?.intelligence_score || Math.floor(Math.random() * 30) + 60,
       ai_metadata: aiResult || {},
-    });
+    };
+
+    const { error } = await supabase.from("events").insert(payload);
     if (error) toast.error(error.message); else { toast.success("Event launched!"); setOpen(false); setAiResult(null); onRefresh(); }
   };
 

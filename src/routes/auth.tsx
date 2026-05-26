@@ -45,8 +45,9 @@ function AuthPage() {
       if (error) throw error;
       toast.success("Account created!");
     } catch (e: any) {
-      setAuthError(e.message);
-      toast.error(e.message);
+      const msg = formatError(e);
+      setAuthError(msg);
+      toast.error(msg);
     } finally { setLoading(false); }
   };
 
@@ -58,10 +59,27 @@ function AuthPage() {
       if (error) throw error;
       toast.success("Welcome back!");
     } catch (e: any) {
-      setAuthError(e.message);
-      toast.error(e.message);
+      const msg = formatError(e);
+      setAuthError(msg);
+      toast.error(msg);
     } finally { setLoading(false); }
   };
+
+  function formatError(e: any) {
+    try {
+      // Supabase/TanStack server errors sometimes serialize Zod issues as JSON
+      if (e?.message) {
+        // If message is JSON array
+        const parsed = JSON.parse(e.message);
+        if (Array.isArray(parsed)) return parsed.map((p: any) => p.message || JSON.stringify(p)).join("; ");
+      }
+    } catch (_) { /* ignore parse errors */ }
+
+    // Supabase error object shape
+    if (e?.error_description) return e.error_description;
+    if (e?.message) return String(e.message);
+    return String(e);
+  }
 
   return (
     <div className="min-h-screen bg-background bg-mesh flex items-center justify-center p-6">
