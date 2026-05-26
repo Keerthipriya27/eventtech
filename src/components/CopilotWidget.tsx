@@ -48,7 +48,7 @@ export function CopilotWidget() {
       if (!resp.ok || !resp.body) {
         const txt = await resp.text();
         if (resp.status === 429) {
-          setMessages((m) => [...m, { role: "assistant", content: "Copilot is temporarily rate limited. Try again in a minute." }]);
+          setMessages((m) => [...m, { role: "assistant", content: "Copilot is unavailable right now. Please try again in a minute." }]);
           return;
         }
 
