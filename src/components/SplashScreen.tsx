@@ -1,225 +1,203 @@
 // ============================================================
 // FILE: src/components/SplashScreen.tsx
-// CREATE this new file at: src/components/SplashScreen.tsx
+// REPLACE the existing file at: src/components/SplashScreen.tsx
 // ============================================================
 
 import { useEffect, useState } from "react";
 
 interface SplashScreenProps {
   onFinish: () => void;
-  duration?: number; // ms, default 2800
+  duration?: number;
 }
 
-export default function SplashScreen({ onFinish, duration = 2800 }: SplashScreenProps) {
+export default function SplashScreen({ onFinish, duration = 6500 }: SplashScreenProps) {
   const [phase, setPhase] = useState<"in" | "hold" | "out">("in");
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("hold"), 600);
-    const t2 = setTimeout(() => setPhase("out"), duration - 400);
+    const t2 = setTimeout(() => setPhase("out"), duration - 500);
     const t3 = setTimeout(onFinish, duration);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [duration, onFinish]);
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9999,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#0a0a12",
-        opacity: phase === "out" ? 0 : 1,
-        transition: phase === "out" ? "opacity 0.4s ease" : undefined,
-        overflow: "hidden",
-      }}
-    >
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      background: "#060d1a",
+      opacity: phase === "out" ? 0 : 1,
+      transition: phase === "out" ? "opacity 0.5s ease" : undefined,
+      overflow: "hidden",
+      fontFamily: "system-ui, -apple-system, sans-serif",
+    }}>
       <style>{`
-        @keyframes orb-pulse {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.18); opacity: 1; }
-        }
-        @keyframes ring-spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes ring-spin-rev {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(-360deg); }
-        }
-        @keyframes logo-rise {
-          from { opacity: 0; transform: translateY(16px) scale(0.96); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes tag-rise {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes dot-blink {
-          0%, 80%, 100% { opacity: 0.2; }
-          40% { opacity: 1; }
-        }
-        @keyframes particle-float {
-          0% { transform: translateY(0) scale(1); opacity: 0; }
-          20% { opacity: 1; }
-          100% { transform: translateY(-120px) scale(0.3); opacity: 0; }
-        }
+        @keyframes et-spin1{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        @keyframes et-spin2{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+        @keyframes et-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.15)}}
+        @keyframes et-rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes et-float{0%{transform:translateY(0) rotate(var(--r,0deg));opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(-200px) rotate(var(--r,0deg));opacity:0}}
+        @keyframes et-blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+        @keyframes et-scan{0%{transform:translateY(-100%)}100%{transform:translateY(500%)}}
+        @keyframes et-progress{from{width:0}to{width:100%}}
+        @keyframes et-countup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        .et-ring{position:absolute;border-radius:50%;border:1.5px solid transparent;}
+        .et-r1{inset:0;border-top-color:#00e5b4;border-right-color:rgba(0,229,180,.2);animation:et-spin1 3s linear infinite;}
+        .et-r2{inset:14px;border-bottom-color:#00b4ff;border-left-color:rgba(0,180,255,.15);animation:et-spin2 2.2s linear infinite;}
+        .et-r3{inset:28px;border-top-color:rgba(0,229,180,.55);animation:et-spin1 4s linear infinite .5s;}
+        .et-r4{inset:42px;border-bottom-color:rgba(0,180,255,.35);animation:et-spin2 1.8s linear infinite .3s;}
+        .et-badge{padding:5px 13px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid;display:flex;align-items:center;gap:5px;}
+        .et-teal{background:rgba(0,229,180,.1);border-color:rgba(0,229,180,.3);color:#00e5b4;}
+        .et-blue{background:rgba(0,180,255,.1);border-color:rgba(0,180,255,.3);color:#00b4ff;}
+        .et-mint{background:rgba(0,229,180,.07);border-color:rgba(0,229,180,.2);color:rgba(0,229,180,.8);}
+        .et-float-emoji{position:fixed;font-size:20px;animation:et-float var(--dur,4s) ease-in-out infinite var(--delay,0s);}
       `}</style>
 
-      {/* Background grid */}
+      {/* Grid background */}
       <div style={{
-        position: "absolute",
-        inset: 0,
-        backgroundImage: `
-          linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px)
-        `,
-        backgroundSize: "48px 48px",
+        position: "absolute", inset: 0,
+        backgroundImage: "linear-gradient(rgba(0,229,180,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,180,.04) 1px,transparent 1px)",
+        backgroundSize: "44px 44px",
       }} />
 
-      {/* Ambient glow blobs */}
+      {/* Ambient glow orbs */}
       <div style={{
-        position: "absolute",
-        width: 500,
-        height: 500,
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        animation: "orb-pulse 3s ease-in-out infinite",
+        position: "absolute", borderRadius: "50%",
+        background: "radial-gradient(circle,rgba(0,229,180,.16) 0%,transparent 70%)",
+        width: 520, height: 520, top: "50%", left: "50%",
+        transform: "translate(-50%,-50%)",
+        animation: "et-pulse 4s ease-in-out infinite",
       }} />
       <div style={{
-        position: "absolute",
-        width: 300,
-        height: 300,
-        borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)",
-        top: "40%",
-        left: "30%",
-        animation: "orb-pulse 4s ease-in-out infinite 1s",
+        position: "absolute", borderRadius: "50%",
+        background: "radial-gradient(circle,rgba(0,120,255,.1) 0%,transparent 70%)",
+        width: 300, height: 300, top: "25%", left: "15%",
+        animation: "et-pulse 5.5s ease-in-out infinite 2s",
       }} />
 
-      {/* Spinning rings */}
-      <div style={{ position: "relative", width: 160, height: 160, marginBottom: 32 }}>
-        {/* Outer ring */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          borderRadius: "50%",
-          border: "1.5px solid transparent",
-          borderTopColor: "rgba(139,92,246,0.7)",
-          borderRightColor: "rgba(139,92,246,0.2)",
-          animation: "ring-spin 2.4s linear infinite",
-        }} />
-        {/* Mid ring */}
-        <div style={{
-          position: "absolute",
-          inset: 14,
-          borderRadius: "50%",
-          border: "1.5px solid transparent",
-          borderBottomColor: "rgba(99,102,241,0.6)",
-          borderLeftColor: "rgba(99,102,241,0.15)",
-          animation: "ring-spin-rev 1.8s linear infinite",
-        }} />
-        {/* Inner ring */}
-        <div style={{
-          position: "absolute",
-          inset: 28,
-          borderRadius: "50%",
-          border: "1px solid transparent",
-          borderTopColor: "rgba(167,139,250,0.5)",
-          animation: "ring-spin 3s linear infinite 0.5s",
-        }} />
+      {/* Vignette */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "radial-gradient(ellipse 75% 75% at 50% 50%,transparent 25%,#060d1a 100%)",
+      }} />
 
-        {/* Center icon */}
+      {/* Scan line */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
         <div style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-            {/* Lightning bolt / event spark icon */}
-            <path
-              d="M25 4L10 24h12l-3 16 17-22H24L25 4z"
-              fill="url(#splash-grad)"
-              stroke="rgba(167,139,250,0.4)"
-              strokeWidth="0.8"
-            />
-            <defs>
-              <linearGradient id="splash-grad" x1="10" y1="4" x2="27" y2="40" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#c4b5fd" />
-                <stop offset="100%" stopColor="#7c3aed" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-
-        {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            width: 3,
-            height: 3,
-            borderRadius: "50%",
-            background: i % 2 === 0 ? "#a78bfa" : "#818cf8",
-            bottom: "10%",
-            left: `${15 + i * 12}%`,
-            animation: `particle-float ${1.5 + i * 0.3}s ease-out infinite ${i * 0.4}s`,
-          }} />
-        ))}
+          position: "absolute", width: "100%", height: 2,
+          background: "linear-gradient(90deg,transparent,rgba(0,229,180,.12),transparent)",
+          animation: "et-scan 7s linear infinite",
+        }} />
       </div>
 
-      {/* Wordmark */}
-      <div style={{
-        animation: "logo-rise 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s both",
-        textAlign: "center",
-      }}>
-        <div style={{
-          fontSize: 36,
-          fontWeight: 700,
-          letterSpacing: "-0.04em",
-          fontFamily: "'Inter', system-ui, sans-serif",
-          background: "linear-gradient(135deg, #e0d7ff 0%, #a78bfa 50%, #818cf8 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          lineHeight: 1,
+      {/* Floating event emojis */}
+      {[
+        { e: "🏆", l: "5%",  b: "12%", dur: "3.8s", delay: "0s",    r: "-12deg" },
+        { e: "💡", l: "11%", b: "22%", dur: "4.2s", delay: ".6s",   r: "8deg"  },
+        { e: "🚀", l: "3%",  b: "40%", dur: "3.5s", delay: "1.2s",  r: "-5deg" },
+        { e: "💻", l: "18%", b: "8%",  dur: "5s",   delay: ".4s",   r: "3deg"  },
+        { e: "🎓", l: "7%",  b: "58%", dur: "3.9s", delay: "2s",    r: "-10deg"},
+        { e: "🎯", r2: "5%", b: "12%", dur: "4s",   delay: ".3s",   r: "10deg" },
+        { e: "🤝", r2: "11%",b: "28%", dur: "3.7s", delay: ".9s",   r: "-8deg" },
+        { e: "⚡", r2: "3%", b: "45%", dur: "4.5s", delay: "1.5s",  r: "6deg"  },
+        { e: "🏅", r2: "7%", b: "58%", dur: "4.1s", delay: "1.7s",  r: "9deg"  },
+        { e: "🎪", l: "22%", b: "68%", dur: "5.2s", delay: ".2s",   r: "4deg"  },
+        { e: "🧠", r2: "22%",b: "68%", dur: "3.6s", delay: "2.3s",  r: "-6deg" },
+        { e: "🎤", r2: "17%",b: "8%",  dur: "4.3s", delay: "1s",    r: "5deg"  },
+        { e: "🌟", l: "28%", b: "15%", dur: "4.8s", delay: "1.8s",  r: "-3deg" },
+        { e: "🔥", r2: "28%",b: "15%", dur: "3.4s", delay: ".7s",   r: "7deg"  },
+        { e: "🎨", l: "14%", b: "75%", dur: "4.6s", delay: "2.5s",  r: "-9deg" },
+        { e: "🛠️", r2: "14%",b: "75%", dur: "5.1s", delay: "1.3s",  r: "4deg"  },
+      ].map((p, i) => (
+        <div key={i} className="et-float-emoji" style={{
+          left: p.l, right: p.r2, bottom: p.b,
+          // @ts-ignore
+          "--dur": p.dur, "--delay": p.delay, "--r": p.r,
         }}>
-          EventTech
+          {p.e}
         </div>
+      ))}
+
+      {/* Center content */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, position: "relative" }}>
+
+        {/* Spinning rings + logo */}
+        <div style={{ position: "relative", width: 164, height: 164, marginBottom: 28 }}>
+          <div className="et-ring et-r1" />
+          <div className="et-ring et-r2" />
+          <div className="et-ring et-r3" />
+          <div className="et-ring et-r4" />
+          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{
+              width: 60, height: 60, borderRadius: 16,
+              background: "linear-gradient(135deg,#00c896,#00e5b4)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: "0 0 36px rgba(0,229,180,.45), 0 0 72px rgba(0,229,180,.15)",
+            }}>
+              <svg width="32" height="32" viewBox="0 0 30 30" fill="none">
+                <path d="M17 3L7 17h9L13 27 23 13h-9L17 3z" fill="white" opacity=".95"/>
+                <circle cx="22" cy="6" r="2.5" fill="white" opacity=".7"/>
+                <circle cx="8" cy="24" r="1.8" fill="white" opacity=".5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Wordmark */}
+        <div style={{ textAlign: "center", animation: "et-rise .7s cubic-bezier(.16,1,.3,1) .4s both" }}>
+          <div style={{
+            fontSize: 42, fontWeight: 800, letterSpacing: "-.04em", lineHeight: 1,
+            background: "linear-gradient(135deg,#ffffff 0%,#00e5b4 55%,#00b4ff 100%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>
+            EventTech
+          </div>
+          <div style={{
+            marginTop: 8, fontSize: 11, letterSpacing: ".22em", textTransform: "uppercase",
+            color: "rgba(0,229,180,.5)", animation: "et-rise .5s ease .8s both",
+          }}>
+            AI-Powered Event Operating System
+          </div>
+        </div>
+
+        {/* Animated stats */}
         <div style={{
-          marginTop: 8,
-          fontSize: 12,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "rgba(167,139,250,0.5)",
-          fontFamily: "system-ui, sans-serif",
-          animation: "tag-rise 0.5s ease 0.7s both",
+          display: "flex", gap: 28, marginTop: 22,
+          animation: "et-rise .5s ease 1.2s both",
         }}>
-          Intelligent Event Ecosystem
+          {[
+            { id: "et-s1", label: "AI Accuracy" },
+            { id: "et-s2", label: "Volunteers" },
+            { id: "et-s3", label: "Sponsor ROI" },
+          ].map((s, i) => (
+            <div key={s.id} style={{ display: "flex", alignItems: "center", gap: 28 }}>
+              {i > 0 && <div style={{ width: 1, height: 28, background: "rgba(255,255,255,.08)" }} />}
+              <div style={{ textAlign: "center" }}>
+                <div id={s.id} style={{ fontSize: 20, fontWeight: 700, color: "#00e5b4" }}>0</div>
+                <div style={{ fontSize: 10, color: "rgba(255,255,255,.3)", letterSpacing: ".1em", textTransform: "uppercase", marginTop: 2 }}>{s.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Loading dots */}
+        <div style={{ display: "flex", gap: 6, marginTop: 28, animation: "et-rise .4s ease 1.4s both" }}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{
+              width: 6, height: 6, borderRadius: "50%", background: "#00e5b4",
+              animation: `et-blink 1.4s ease-in-out infinite ${i * 0.22}s`,
+            }} />
+          ))}
         </div>
       </div>
 
-      {/* Loading dots */}
-      <div style={{
-        display: "flex",
-        gap: 6,
-        marginTop: 40,
-        animation: "tag-rise 0.4s ease 0.9s both",
-      }}>
-        {[0, 1, 2].map((i) => (
-          <div key={i} style={{
-            width: 6,
-            height: 6,
-            borderRadius: "50%",
-            background: "#7c3aed",
-            animation: `dot-blink 1.2s ease-in-out infinite ${i * 0.2}s`,
-          }} />
-        ))}
+      {/* Progress bar at bottom */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 2, background: "rgba(255,255,255,.05)" }}>
+        <div style={{
+          height: "100%",
+          background: "linear-gradient(90deg,#00e5b4,#00b4ff)",
+          animation: `et-progress ${duration}ms linear forwards`,
+          borderRadius: "0 2px 2px 0",
+        }} />
       </div>
     </div>
   );
