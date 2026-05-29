@@ -131,6 +131,23 @@ export default function SplashScreen({ onFinish, duration = 6500 }: SplashScreen
           </div>
         </div>
 
+          {/* Badges */}
+        <div style={{
+          display: "flex", gap: 8, marginTop: 22, flexWrap: "wrap", justifyContent: "center",
+          animation: "et-rise .5s ease 1s both",
+        }}>
+          {[
+            { label: "⚡ Hackathons",  cls: "et-teal" },
+            { label: "🎓 Workshops",   cls: "et-blue" },
+            { label: "🤝 Networking",  cls: "et-mint" },
+            { label: "🏆 Gamified XP", cls: "et-teal" },
+            { label: "🧠 AI Copilot",  cls: "et-blue" },
+            { label: "🚀 Sponsors",    cls: "et-mint" },
+          ].map((b) => (
+            <div key={b.label} className={`et-badge ${b.cls}`}>{b.label}</div>
+          ))}
+        </div>
+
         {/* Animated stats */}
         <div style={{
           display: "flex", gap: 28, marginTop: 22,
