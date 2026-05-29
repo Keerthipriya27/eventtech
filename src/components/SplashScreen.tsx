@@ -89,34 +89,6 @@ export default function SplashScreen({ onFinish, duration = 6500 }: SplashScreen
         }} />
       </div>
 
-      {/* Floating event emojis */}
-      {[
-        { e: "🏆", l: "5%",  b: "12%", dur: "3.8s", delay: "0s",    r: "-12deg" },
-        { e: "💡", l: "11%", b: "22%", dur: "4.2s", delay: ".6s",   r: "8deg"  },
-        { e: "🚀", l: "3%",  b: "40%", dur: "3.5s", delay: "1.2s",  r: "-5deg" },
-        { e: "💻", l: "18%", b: "8%",  dur: "5s",   delay: ".4s",   r: "3deg"  },
-        { e: "🎓", l: "7%",  b: "58%", dur: "3.9s", delay: "2s",    r: "-10deg"},
-        { e: "🎯", r2: "5%", b: "12%", dur: "4s",   delay: ".3s",   r: "10deg" },
-        { e: "🤝", r2: "11%",b: "28%", dur: "3.7s", delay: ".9s",   r: "-8deg" },
-        { e: "⚡", r2: "3%", b: "45%", dur: "4.5s", delay: "1.5s",  r: "6deg"  },
-        { e: "🏅", r2: "7%", b: "58%", dur: "4.1s", delay: "1.7s",  r: "9deg"  },
-        { e: "🎪", l: "22%", b: "68%", dur: "5.2s", delay: ".2s",   r: "4deg"  },
-        { e: "🧠", r2: "22%",b: "68%", dur: "3.6s", delay: "2.3s",  r: "-6deg" },
-        { e: "🎤", r2: "17%",b: "8%",  dur: "4.3s", delay: "1s",    r: "5deg"  },
-        { e: "🌟", l: "28%", b: "15%", dur: "4.8s", delay: "1.8s",  r: "-3deg" },
-        { e: "🔥", r2: "28%",b: "15%", dur: "3.4s", delay: ".7s",   r: "7deg"  },
-        { e: "🎨", l: "14%", b: "75%", dur: "4.6s", delay: "2.5s",  r: "-9deg" },
-        { e: "🛠️", r2: "14%",b: "75%", dur: "5.1s", delay: "1.3s",  r: "4deg"  },
-      ].map((p, i) => (
-        <div key={i} className="et-float-emoji" style={{
-          left: p.l, right: p.r2, bottom: p.b,
-          // @ts-ignore
-          "--dur": p.dur, "--delay": p.delay, "--r": p.r,
-        }}>
-          {p.e}
-        </div>
-      ))}
-
       {/* Center content */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", zIndex: 2, position: "relative" }}>
 
