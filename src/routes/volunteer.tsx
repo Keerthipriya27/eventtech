@@ -78,22 +78,31 @@ export default function VolunteerPage() {
       }
     } catch (e: any) {
       console.error('AI recommend failed, falling back', e);
-      // fallback to client heuristic
+      // fallback to client heuristic or demo tasks when none exist
       try {
         await new Promise((r) => setTimeout(r, 300));
         const userSkills = userProfile?.skills || ["communication", "technical"];
-        const openTasks = tasks.filter((t: any) => t.status === "open");
+        let openTasks = tasks.filter((t: any) => t.status === "open");
+        // If no tasks exist (demo mode), create some mock tasks for the UI
+        if (!openTasks.length) {
+          openTasks = Array.from({ length: 6 }).map((_, i) => ({
+            id: `demo-${i}`,
+            title: [`Badge distribution`, `Registration desk`, `Speaker liaison`, `AV support`, `Mentor lead`, `Expo host`][i % 6],
+            xp_reward: 5 + (i % 3) * 5,
+            required_skills: i % 2 === 0 ? ["communication"] : ["technical"],
+            status: 'open',
+            events: { title: 'Demo event' },
+          }));
+        }
         const scored = openTasks
           .map((t: any) => {
             const taskSkills = (t.required_skills || []).map((s: string) => s.toLowerCase());
             const overlap = userSkills.filter((s: string) =>
-              taskSkills.some(
-                (ts: string) => ts.includes(s.toLowerCase()) || s.toLowerCase().includes(ts),
-              ),
+              taskSkills.some((ts: string) => ts.includes(s.toLowerCase()) || s.toLowerCase().includes(ts)),
             );
             return {
               ...t,
-              match_score: Math.min(95, 40 + overlap.length * 25 + Math.floor(Math.random() * 20)),
+              match_score: Math.min(95, 40 + overlap.length * 25 + Math.floor(Math.random() * 30)),
               overlap,
             };
           })

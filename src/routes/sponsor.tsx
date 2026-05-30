@@ -174,8 +174,13 @@ export default function SponsorPage() {
       const sessionResp = await supabase.auth.getSession();
       const sponsor_id = sessionResp?.data?.session?.user?.id ?? null;
       if (!sponsor_id) {
-        toast.error("Please sign in to run sponsor matching.");
-        navigate({ to: "/auth" });
+        // Demo mode when not signed in: create mock matches so UI can show results
+        toast(`Running demo sponsor match (sign in for live results)`, { icon: '⚡' });
+        const mapped: Match[] = events
+          .slice(0, 12)
+          .map((ev, idx) => ({ event_id: ev.id, match_score: Math.max(12, 95 - idx * 6 - Math.floor(Math.random() * 12)), roi_score: Math.max(8, 85 - idx * 5), predicted_impressions: 1000 + idx * 300, recommended_package: ['Bronze','Silver','Gold'][idx % 3], reasoning: 'Demo mode: approximate fit' }))
+          .sort((a,b)=>b.match_score - a.match_score);
+        setMatches(mapped.slice(0, 20));
         setMatching(false);
         return;
       }
