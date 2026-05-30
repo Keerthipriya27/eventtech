@@ -10,8 +10,6 @@ import {
 import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
-import { useState } from "react";
-import SplashScreen from "@/components/SplashScreen";
 
 function NotFoundComponent() {
   return (
@@ -103,7 +101,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="page-bg">
         {children}
         <Scripts />
       </body>
@@ -113,10 +111,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [splashDone, setSplashDone] = useState(false);
   return (
     <QueryClientProvider client={queryClient}>
-      {!splashDone && <SplashScreen onFinish={() => setSplashDone(true)} />}
       <Outlet />
       <Toaster />
     </QueryClientProvider>

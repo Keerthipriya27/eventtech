@@ -3,21 +3,25 @@
 A compact, modern event management app built with Vite, React, TanStack Router, and Supabase. It includes event creation, registration, volunteer tasks, sponsorship matching, and AI-powered event planning features. This repository contains the full source and local development instructions.
 
 **Demo**
+
 - Local dev: http://localhost:8081/ (Vite dev server)
 
 **Highlights**
+
 - Auth + DB with Supabase (browser & server/admin clients)
 - AI features integrated via OpenAI (event planner, copilot, sponsor-match)
 - Role-based UX: organizer, volunteer, sponsor, participant
 - Server-side helper functions (TanStack Start) for safe admin operations
 
 **Tech Stack**
+
 - Frontend: React (Vite) + TanStack Router
 - Styling & components: Radix/Custom components + Tailwind/Vite setup
 - Backend: Supabase (Postgres) for auth, rows and RLS policies
 - AI: OpenAI (server-side functions)
 
 **Quickstart (Local)**
+
 1. Install dependencies
 
 ```bash
@@ -27,7 +31,7 @@ npm install
 2. Create a `.env` at the repo root (do NOT commit it). Required keys:
 
 - `VITE_SUPABASE_URL` — your Supabase URL (starts with https://...)
-- `VITE_SUPABASE_PUBLISHABLE_KEY` — public anon key (VITE_ prefixed for client)
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — public anon key (VITE\_ prefixed for client)
 - `SUPABASE_URL` — same as VITE_SUPABASE_URL (server usage)
 - `SUPABASE_PUBLISHABLE_KEY` — same anon key for server-side when needed
 - `SUPABASE_SERVICE_ROLE_KEY` — service role key (server only; keep secret)
@@ -58,18 +62,22 @@ npm run dev
 - Or use the Supabase CLI to push migrations from this repo.
 
 **Applying migrations (SQL Editor)**
+
 1. Open: https://app.supabase.com/project/<your-project-ref>/sql
 2. Paste the contents of `supabase/migrations/20260525182111_c028c753-97cf-4928-ac58-c8b70806586b.sql` and execute.
 
 **Important security note**
+
 - Never commit `.env` or secret keys. Rotate any keys you accidentally committed earlier.
 - `SUPABASE_SERVICE_ROLE_KEY` must only be used on server-side functions.
 
 **Password & Email policy**
+
 - Passwords must be at least 10 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.
 - For this deployment, signups are restricted to `@gmail.com` addresses only. This is enforced client-side and server-side.
 
 **Testing the main flows**
+
 - Sign up (uses server-side admin create user when available)
 - Create an event (Organizers) — the dashboard provides a modal to create events. The `start_date` field accepts `datetime-local` and is normalized to an ISO timestamp.
 - Register for events (Participants)
@@ -77,6 +85,7 @@ npm run dev
 - Sponsor match and AI features powered by server functions
 
 **Developer notes**
+
 - If the dev server opens on a different port, check the terminal output for the Local URL.
 - The project uses TanStack Start server functions in `src/integrations/supabase/*` for server-only operations.
 - AI-related functions live in `supabase/functions/` and are proxied by the frontend to the project functions endpoints.

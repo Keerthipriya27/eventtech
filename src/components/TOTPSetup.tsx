@@ -4,16 +4,16 @@
 // ============================================================
 
 import { useState, useEffect } from "react";
-import QRCode from "qrcode";  // install: npm install qrcode @types/qrcode
+import { useNavigate } from "@tanstack/react-router";
 import { ShieldCheck, ShieldOff, Copy, Check, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTOTP } from "@/hooks/useTOTP";
-import { useSupabaseAuth } from "@/integrations/supabase/auth"; // adjust path if needed
+import { supabase } from "@/integrations/supabase/client";
 
 export default function TOTPSetup() {
-  const { session } = useSupabaseAuth();
-  const email = session?.user?.email ?? "";
-  const metaEnabled = session?.user?.user_metadata?.totp_enabled === true;
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [metaEnabled, setMetaEnabled] = useState(false);
 
   const { state, beginSetup, confirmSetup, disableTOTP } = useTOTP(email);
   const [token, setToken] = useState("");
@@ -21,9 +21,45 @@ export default function TOTPSetup() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (state.qrUri) {
-      QRCode.toDataURL(state.qrUri, { width: 200, margin: 2 }).then(setQrDataUrl);
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      const u = data.user;
+      setEmail(u?.email ?? "");
+      const enabled = u?.user_metadata?.totp_enabled === true;
+      setMetaEnabled(enabled);
+      if (enabled && u?.id) {
+        localStorage.setItem(`eventtech_2fa_verified_${u.id}`, "true");
+        navigate({ to: "/dashboard", replace: true });
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [navigate]);
+
+  // If the local TOTP state becomes enabled (client-side confirmation), ensure we mark
+  // the session as locally verified and navigate to the dashboard even if server metadata
+  // hasn't propagated yet.
+  useEffect(() => {
+    if (state.step === "enabled") {
+      (async () => {
+        try {
+          const { data } = await supabase.auth.getUser();
+          const userId = data?.user?.id;
+          if (userId) localStorage.setItem(`eventtech_2fa_verified_${userId}`, "true");
+        } catch (e) {
+          // ignore errors — still navigate
+        }
+        navigate({ to: "/dashboard", replace: true });
+      })();
     }
+  }, [state.step, navigate]);
+
+  useEffect(() => {
+    if (!state.qrUri) return;
+    const encoded = encodeURIComponent(state.qrUri);
+    setQrDataUrl(`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encoded}`);
   }, [state.qrUri]);
 
   const copySecret = () => {
@@ -53,6 +89,22 @@ export default function TOTPSetup() {
             <ShieldOff className="w-4 h-4" />
             Disable 2FA
           </Button>
+          <div className="mt-3">
+            <Button
+              size="sm"
+              onClick={async () => {
+                try {
+                  const { data } = await supabase.auth.getUser();
+                  const userId = data?.user?.id;
+                  if (userId) localStorage.setItem(`eventtech_2fa_verified_${userId}`, "true");
+                } catch (e) {}
+                navigate({ to: "/dashboard", replace: true });
+              }}
+              className="ml-3"
+            >
+              Continue to dashboard
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -63,14 +115,17 @@ export default function TOTPSetup() {
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-5 flex items-start gap-4">
         <ShieldOff className="w-6 h-6 text-gray-400 mt-0.5 shrink-0" />
         <div className="flex-1">
-          <p className="font-semibold text-gray-800 dark:text-gray-200">Two-factor authentication</p>
+          <p className="font-semibold text-gray-800 dark:text-gray-200">
+            Two-factor authentication
+          </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-            Add an extra layer of security using an authenticator app (Google Authenticator, Authy, etc.).
+            Add an extra layer of security using an authenticator app (Google Authenticator, Authy,
+            etc.).
           </p>
           <Button
             size="sm"
             className="mt-3 bg-violet-600 hover:bg-violet-700 text-white gap-2"
-            onClick={beginSetup}
+            onClick={() => beginSetup(email)}
             disabled={state.loading}
           >
             {state.loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
@@ -93,14 +148,25 @@ export default function TOTPSetup() {
       {/* QR Code */}
       <div className="flex flex-col items-center gap-3">
         {qrDataUrl ? (
-          <img src={qrDataUrl} alt="TOTP QR Code" className="w-44 h-44 rounded-xl border border-gray-200" />
+          <img
+            src={qrDataUrl}
+            alt="TOTP QR Code"
+            className="w-44 h-44 rounded-xl border border-gray-200"
+          />
         ) : (
           <div className="w-44 h-44 bg-gray-100 rounded-xl animate-pulse" />
         )}
         <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg px-3 py-1.5 text-xs font-mono text-gray-600 dark:text-gray-300">
           <span className="select-all">{state.secret}</span>
-          <button onClick={copySecret} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
-            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+          <button
+            onClick={copySecret}
+            className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+          >
+            {copied ? (
+              <Check className="w-3.5 h-3.5 text-green-500" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
           </button>
         </div>
       </div>
@@ -133,8 +199,20 @@ export default function TOTPSetup() {
 
       <Button
         onClick={async () => {
-          await confirmSetup(token);
+          const ok = await confirmSetup(token);
           setToken("");
+          if (ok) {
+            // mark local verification so auth flow continues
+            try {
+              const { data } = await supabase.auth.getUser();
+              const userId = data?.user?.id;
+              if (userId) localStorage.setItem(`eventtech_2fa_verified_${userId}`, "true");
+            } catch (e) {
+              /* ignore */
+            }
+            // navigate to dashboard
+            navigate({ to: "/dashboard" });
+          }
         }}
         disabled={token.length < 6 || state.loading}
         className="w-full h-11 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-medium"

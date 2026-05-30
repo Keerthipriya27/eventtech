@@ -75,7 +75,9 @@ export default function TOTPVerifyStep({
         {digits.map((d, i) => (
           <input
             key={i}
-            ref={(el) => { inputs.current[i] = el; }}
+            ref={(el) => {
+              inputs.current[i] = el;
+            }}
             type="text"
             inputMode="numeric"
             maxLength={1}
@@ -105,9 +107,7 @@ export default function TOTPVerifyStep({
           disabled={digits.join("").length < 6 || loading}
           className="w-full h-11 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-xl"
         >
-          {loading ? (
-            <Loader2 className="w-4 h-4 animate-spin mr-2" />
-          ) : null}
+          {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
           Verify
         </Button>
         <Button

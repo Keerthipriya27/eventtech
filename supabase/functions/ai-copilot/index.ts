@@ -17,18 +17,31 @@ Deno.serve(async (req) => {
         model: "gpt-4o-mini",
         stream: true,
         messages: [
-          { role: "system", content: "You are EventTech Copilot — an expert AI assistant for event organizers, sponsors, volunteers, and participants. Be concise, actionable, and use markdown. Help with scheduling, budgeting, risk analysis, sponsor matching, volunteer coordination, and growth strategies." },
+          {
+            role: "system",
+            content:
+              "You are EventTech Copilot — an expert AI assistant for event organizers, sponsors, volunteers, and participants. Be concise, actionable, and use markdown. Help with scheduling, budgeting, risk analysis, sponsor matching, volunteer coordination, and growth strategies.",
+          },
           ...messages,
         ],
       }),
     });
 
-    if (resp.status === 429) return new Response(JSON.stringify({ error: "Rate limit." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (resp.status === 429)
+      return new Response(JSON.stringify({ error: "Rate limit." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     if (!resp.ok || !resp.body) throw new Error(`openai ${resp.status}`);
 
-    return new Response(resp.body, { headers: { ...corsHeaders, "Content-Type": "text/event-stream" } });
+    return new Response(resp.body, {
+      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    });
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

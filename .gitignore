@@ -33,3 +33,4 @@ dist-ssr
 
 # Local env
 .env
+.env.local

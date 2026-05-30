@@ -1,426 +1,418 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
+    PostgrestVersion: "14.5";
+  };
   public: {
     Tables: {
       certificates: {
         Row: {
-          certificate_url: string | null
-          event_id: string
-          id: string
-          issued_at: string
-          user_id: string
-        }
+          certificate_url: string | null;
+          event_id: string;
+          id: string;
+          issued_at: string;
+          user_id: string;
+        };
         Insert: {
-          certificate_url?: string | null
-          event_id: string
-          id?: string
-          issued_at?: string
-          user_id: string
-        }
+          certificate_url?: string | null;
+          event_id: string;
+          id?: string;
+          issued_at?: string;
+          user_id: string;
+        };
         Update: {
-          certificate_url?: string | null
-          event_id?: string
-          id?: string
-          issued_at?: string
-          user_id?: string
-        }
+          certificate_url?: string | null;
+          event_id?: string;
+          id?: string;
+          issued_at?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "certificates_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
+            foreignKeyName: "certificates_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       events: {
         Row: {
-          ai_metadata: Json | null
-          budget: number | null
-          capacity: number | null
-          category: string | null
-          cover_image: string | null
-          created_at: string
-          description: string | null
-          end_date: string | null
-          id: string
-          intelligence_score: number | null
-          location: string | null
-          organizer_id: string
-          start_date: string | null
-          status: string
-          title: string
-        }
+          ai_metadata: Json | null;
+          budget: number | null;
+          capacity: number | null;
+          category: string | null;
+          cover_image: string | null;
+          created_at: string;
+          description: string | null;
+          end_date: string | null;
+          id: string;
+          intelligence_score: number | null;
+          location: string | null;
+          organizer_id: string;
+          start_date: string | null;
+          status: string;
+          title: string;
+        };
         Insert: {
-          ai_metadata?: Json | null
-          budget?: number | null
-          capacity?: number | null
-          category?: string | null
-          cover_image?: string | null
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          intelligence_score?: number | null
-          location?: string | null
-          organizer_id: string
-          start_date?: string | null
-          status?: string
-          title: string
-        }
+          ai_metadata?: Json | null;
+          budget?: number | null;
+          capacity?: number | null;
+          category?: string | null;
+          cover_image?: string | null;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          intelligence_score?: number | null;
+          location?: string | null;
+          organizer_id: string;
+          start_date?: string | null;
+          status?: string;
+          title: string;
+        };
         Update: {
-          ai_metadata?: Json | null
-          budget?: number | null
-          capacity?: number | null
-          category?: string | null
-          cover_image?: string | null
-          created_at?: string
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          intelligence_score?: number | null
-          location?: string | null
-          organizer_id?: string
-          start_date?: string | null
-          status?: string
-          title?: string
-        }
-        Relationships: []
-      }
+          ai_metadata?: Json | null;
+          budget?: number | null;
+          capacity?: number | null;
+          category?: string | null;
+          cover_image?: string | null;
+          created_at?: string;
+          description?: string | null;
+          end_date?: string | null;
+          id?: string;
+          intelligence_score?: number | null;
+          location?: string | null;
+          organizer_id?: string;
+          start_date?: string | null;
+          status?: string;
+          title?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
-          avatar_url: string | null
-          badges: string[] | null
-          bio: string | null
-          company: string | null
-          created_at: string
-          full_name: string | null
-          id: string
-          industry: string | null
-          level: number
-          skills: string[] | null
-          xp: number
-        }
+          avatar_url: string | null;
+          badges: string[] | null;
+          bio: string | null;
+          company: string | null;
+          created_at: string;
+          full_name: string | null;
+          id: string;
+          industry: string | null;
+          level: number;
+          skills: string[] | null;
+          xp: number;
+        };
         Insert: {
-          avatar_url?: string | null
-          badges?: string[] | null
-          bio?: string | null
-          company?: string | null
-          created_at?: string
-          full_name?: string | null
-          id: string
-          industry?: string | null
-          level?: number
-          skills?: string[] | null
-          xp?: number
-        }
+          avatar_url?: string | null;
+          badges?: string[] | null;
+          bio?: string | null;
+          company?: string | null;
+          created_at?: string;
+          full_name?: string | null;
+          id: string;
+          industry?: string | null;
+          level?: number;
+          skills?: string[] | null;
+          xp?: number;
+        };
         Update: {
-          avatar_url?: string | null
-          badges?: string[] | null
-          bio?: string | null
-          company?: string | null
-          created_at?: string
-          full_name?: string | null
-          id?: string
-          industry?: string | null
-          level?: number
-          skills?: string[] | null
-          xp?: number
-        }
-        Relationships: []
-      }
+          avatar_url?: string | null;
+          badges?: string[] | null;
+          bio?: string | null;
+          company?: string | null;
+          created_at?: string;
+          full_name?: string | null;
+          id?: string;
+          industry?: string | null;
+          level?: number;
+          skills?: string[] | null;
+          xp?: number;
+        };
+        Relationships: [];
+      };
       registrations: {
         Row: {
-          checked_in: boolean | null
-          created_at: string
-          event_id: string
-          id: string
-          qr_code: string
-          user_id: string
-        }
+          checked_in: boolean | null;
+          created_at: string;
+          event_id: string;
+          id: string;
+          qr_code: string;
+          user_id: string;
+        };
         Insert: {
-          checked_in?: boolean | null
-          created_at?: string
-          event_id: string
-          id?: string
-          qr_code?: string
-          user_id: string
-        }
+          checked_in?: boolean | null;
+          created_at?: string;
+          event_id: string;
+          id?: string;
+          qr_code?: string;
+          user_id: string;
+        };
         Update: {
-          checked_in?: boolean | null
-          created_at?: string
-          event_id?: string
-          id?: string
-          qr_code?: string
-          user_id?: string
-        }
+          checked_in?: boolean | null;
+          created_at?: string;
+          event_id?: string;
+          id?: string;
+          qr_code?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "registrations_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
+            foreignKeyName: "registrations_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       sponsorships: {
         Row: {
-          amount: number | null
-          created_at: string
-          event_id: string
-          id: string
-          match_score: number | null
-          package_name: string | null
-          roi_score: number | null
-          sponsor_id: string
-          status: string
-        }
+          amount: number | null;
+          created_at: string;
+          event_id: string;
+          id: string;
+          match_score: number | null;
+          package_name: string | null;
+          roi_score: number | null;
+          sponsor_id: string;
+          status: string;
+        };
         Insert: {
-          amount?: number | null
-          created_at?: string
-          event_id: string
-          id?: string
-          match_score?: number | null
-          package_name?: string | null
-          roi_score?: number | null
-          sponsor_id: string
-          status?: string
-        }
+          amount?: number | null;
+          created_at?: string;
+          event_id: string;
+          id?: string;
+          match_score?: number | null;
+          package_name?: string | null;
+          roi_score?: number | null;
+          sponsor_id: string;
+          status?: string;
+        };
         Update: {
-          amount?: number | null
-          created_at?: string
-          event_id?: string
-          id?: string
-          match_score?: number | null
-          package_name?: string | null
-          roi_score?: number | null
-          sponsor_id?: string
-          status?: string
-        }
+          amount?: number | null;
+          created_at?: string;
+          event_id?: string;
+          id?: string;
+          match_score?: number | null;
+          package_name?: string | null;
+          roi_score?: number | null;
+          sponsor_id?: string;
+          status?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "sponsorships_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
+            foreignKeyName: "sponsorships_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       user_roles: {
         Row: {
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Insert: {
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
+          id?: string;
+          role: Database["public"]["Enums"]["app_role"];
+          user_id: string;
+        };
         Update: {
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
+          id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       volunteer_tasks: {
         Row: {
-          assigned_to: string | null
-          created_at: string
-          description: string | null
-          event_id: string
-          id: string
-          required_skills: string[] | null
-          status: string
-          title: string
-          xp_reward: number | null
-        }
+          assigned_to: string | null;
+          created_at: string;
+          description: string | null;
+          event_id: string;
+          id: string;
+          required_skills: string[] | null;
+          status: string;
+          title: string;
+          xp_reward: number | null;
+        };
         Insert: {
-          assigned_to?: string | null
-          created_at?: string
-          description?: string | null
-          event_id: string
-          id?: string
-          required_skills?: string[] | null
-          status?: string
-          title: string
-          xp_reward?: number | null
-        }
+          assigned_to?: string | null;
+          created_at?: string;
+          description?: string | null;
+          event_id: string;
+          id?: string;
+          required_skills?: string[] | null;
+          status?: string;
+          title: string;
+          xp_reward?: number | null;
+        };
         Update: {
-          assigned_to?: string | null
-          created_at?: string
-          description?: string | null
-          event_id?: string
-          id?: string
-          required_skills?: string[] | null
-          status?: string
-          title?: string
-          xp_reward?: number | null
-        }
+          assigned_to?: string | null;
+          created_at?: string;
+          description?: string | null;
+          event_id?: string;
+          id?: string;
+          required_skills?: string[] | null;
+          status?: string;
+          title?: string;
+          xp_reward?: number | null;
+        };
         Relationships: [
           {
-            foreignKeyName: "volunteer_tasks_event_id_fkey"
-            columns: ["event_id"]
-            isOneToOne: false
-            referencedRelation: "events"
-            referencedColumns: ["id"]
+            foreignKeyName: "volunteer_tasks_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
           },
-        ]
-      }
-    }
+        ];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
       has_role: {
         Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-    }
+          _role: Database["public"]["Enums"]["app_role"];
+          _user_id: string;
+        };
+        Returns: boolean;
+      };
+    };
     Enums: {
-      app_role: "organizer" | "volunteer" | "sponsor" | "participant"
-    }
+      app_role: "organizer" | "volunteer" | "sponsor" | "participant";
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
@@ -428,4 +420,4 @@ export const Constants = {
       app_role: ["organizer", "volunteer", "sponsor", "participant"],
     },
   },
-} as const
+} as const;

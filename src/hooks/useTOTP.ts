@@ -49,10 +49,10 @@ async function computeHOTP(secret: string, counter: number): Promise<string> {
   const key = base32Decode(secret);
   const cryptoKey = await crypto.subtle.importKey(
     "raw",
-    key,
+    key as unknown as ArrayBuffer,
     { name: "HMAC", hash: "SHA-1" },
     false,
-    ["sign"]
+    ["sign"],
   );
   const msg = new ArrayBuffer(8);
   const view = new DataView(msg);
@@ -82,7 +82,7 @@ export async function verifyTOTP(secret: string, token: string): Promise<boolean
 export async function generateQRUri(
   secret: string,
   email: string,
-  issuer = "EventTech"
+  issuer = "EventTech",
 ): Promise<string> {
   const label = encodeURIComponent(`${issuer}:${email}`);
   return `otpauth://totp/${label}?secret=${secret}&issuer=${encodeURIComponent(issuer)}&algorithm=SHA1&digits=6&period=30`;
@@ -107,10 +107,11 @@ export function useTOTP(userEmail: string) {
     loading: false,
   });
 
-  const beginSetup = async () => {
+  const beginSetup = async (overrideEmail?: string) => {
     setState((s) => ({ ...s, loading: true, error: null }));
     const secret = await generateTOTPSecret();
-    const qrUri = await generateQRUri(secret, userEmail);
+    const emailToUse = overrideEmail || userEmail || "";
+    const qrUri = await generateQRUri(secret, emailToUse);
     setState({ step: "setup", secret, qrUri, error: null, loading: false });
   };
 

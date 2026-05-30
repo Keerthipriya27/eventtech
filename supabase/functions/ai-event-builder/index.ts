@@ -17,8 +17,13 @@ Deno.serve(async (req) => {
         model: "gpt-4o-mini",
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: "You are an elite event strategist. Always return STRICT JSON only, no prose." },
-          { role: "user", content: `Design an event plan. Title: ${title}. Category: ${category}. Audience: ${audience}. Budget: $${budget}.
+          {
+            role: "system",
+            content: "You are an elite event strategist. Always return STRICT JSON only, no prose.",
+          },
+          {
+            role: "user",
+            content: `Design an event plan. Title: ${title}. Category: ${category}. Audience: ${audience}. Budget: $${budget}.
 Return JSON with this exact shape:
 {
   "tagline": "string",
@@ -30,12 +35,17 @@ Return JSON with this exact shape:
   "volunteer_needs": [{"role":"string","count":number,"skills":["string"]}],
   "intelligence_score": number (0-100, based on plan strength),
   "risks": ["string"]
-}` },
+}`,
+          },
         ],
       }),
     });
 
-    if (resp.status === 429) return new Response(JSON.stringify({ error: "Rate limit. Try again." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (resp.status === 429)
+      return new Response(JSON.stringify({ error: "Rate limit. Try again." }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     if (!resp.ok) throw new Error(`openai ${resp.status}`);
 
     const data = await resp.json();
@@ -43,9 +53,14 @@ Return JSON with this exact shape:
     const cleaned = content.replace(/```json\n?|\n?```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    return new Response(JSON.stringify(parsed), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify(parsed), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (e) {
     console.error(e);
-    return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: String(e) }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

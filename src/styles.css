@@ -41,13 +41,13 @@
   --radius: 0.75rem;
   --background: oklch(0.16 0.04 240);
   --foreground: oklch(0.97 0.01 180);
-  --card: oklch(0.20 0.05 235);
+  --card: oklch(0.2 0.05 235);
   --card-foreground: oklch(0.97 0.01 180);
-  --popover: oklch(0.20 0.05 235);
+  --popover: oklch(0.2 0.05 235);
   --popover-foreground: oklch(0.97 0.01 180);
   --primary: oklch(0.82 0.18 165);
   --primary-foreground: oklch(0.16 0.04 240);
-  --secondary: oklch(0.30 0.06 235);
+  --secondary: oklch(0.3 0.06 235);
   --secondary-foreground: oklch(0.97 0.01 180);
   --muted: oklch(0.24 0.04 235);
   --muted-foreground: oklch(0.68 0.03 200);
@@ -55,35 +55,351 @@
   --accent-foreground: oklch(0.97 0.01 180);
   --destructive: oklch(0.65 0.22 25);
   --destructive-foreground: oklch(0.97 0.01 180);
-  --border: oklch(0.30 0.05 235);
+  --border: oklch(0.3 0.05 235);
   --input: oklch(0.26 0.05 235);
   --ring: oklch(0.82 0.18 165);
   --chart-1: oklch(0.82 0.18 165);
-  --chart-2: oklch(0.70 0.15 200);
-  --chart-3: oklch(0.55 0.20 280);
+  --chart-2: oklch(0.7 0.15 200);
+  --chart-3: oklch(0.55 0.2 280);
   --chart-4: oklch(0.75 0.18 90);
   --chart-5: oklch(0.65 0.22 25);
 }
 
-.dark { color-scheme: dark; }
-
-@layer base {
-  * { border-color: var(--color-border); }
-  html, body { background-color: var(--color-background); color: var(--color-foreground); font-family: ui-sans-serif, system-ui, sans-serif; }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+.dark {
+  color-scheme: dark;
 }
 
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Global decorative photographic background (subtle, behind existing gradients) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/images/body-subtle.jpg');
+  background-size: cover;
+  background-position: center center;
+  opacity: 0.06;
+  filter: blur(2px) saturate(1.05) contrast(0.95);
+  pointer-events: none;
+}
+
+/* Slightly different tint for auth pages to make forms pop */
+.auth-bg::before {
+  opacity: 0.08;
+  background-image: url('/images/auth-deco.jpg');
+}
+
+/* Stronger global page background when enabled (applies to every page) */
+body.page-bg::before {
+  background-image: url('/images/page-bg.jpg');
+  background-size: 60% auto;
+  background-position: center center;
+  opacity: 0.12;
+  transform: translateZ(0);
+}
+
+/* A lightweight decorative frame for main cards */
+.et-frame {
+  position: relative;
+}
+.et-frame::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--radius));
+  border-radius: calc(var(--radius) + 6px);
+  pointer-events: none;
+  box-shadow: 0 40px 80px rgba(2,6,23,0.45);
+  z-index: -1;
+}
+
+/* Per-page backgrounds (subtle photographic textures + tint overlays) */
+.dashboard-bg {
+  /* Hackathon / collaborative coding scene — show whole group (less cropped) */
+  background-image: linear-gradient(160deg, rgba(6,24,45,0.55), rgba(12,20,34,0.65)), url('/images/dashboard.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+.dashboard-bg::before { content: ""; position: absolute; inset:0; background: rgba(2,6,23,0.36); pointer-events:none; }
+
+.setup-2fa-bg {
+  /* Security / authenticator imagery */
+  background-image: linear-gradient(160deg, rgba(2,16,22,0.5), rgba(6,12,24,0.6)), url('/images/setup2fa.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+.setup-2fa-bg::before { content: ""; position: absolute; inset:0; background: rgba(0,10,20,0.28); pointer-events:none; }
+
+.events-bg {
+  /* Workshops / learning scene */
+  background-image: linear-gradient(180deg, rgba(6,18,44,0.5), rgba(10,12,20,0.6)), url('/images/events.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+.events-bg::before { content: ""; position: absolute; inset:0; background: rgba(6,12,22,0.22); pointer-events:none; }
+
+.organizer-bg {
+  /* Organizer / stage & planning imagery */
+  background-image: linear-gradient(160deg, rgba(8,12,20,0.5), rgba(4,8,16,0.6)), url('/images/organizer.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+.organizer-bg::before { content: ""; position: absolute; inset:0; background: rgba(4,8,16,0.2); pointer-events:none; }
+
+/* Decorative overlays: additional themed photos per page (low-opacity, zoomed-out) */
+.dashboard-bg::after,
+.events-bg::after,
+.organizer-bg::after,
+.setup-2fa-bg::after,
+.auth-bg::after,
+body.page-bg::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.06;
+  filter: blur(1px) saturate(0.95);
+}
+
+.dashboard-bg::after {
+  right: 6%;
+  top: 8%;
+  width: 36%;
+  height: 36%;
+  background-image: url('/images/dashboard-deco.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.045;
+}
+
+.events-bg::after {
+  left: 6%;
+  bottom: 6%;
+  width: 34%;
+  height: 30%;
+  background-image: url('/images/events.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.organizer-bg::after {
+  left: 8%;
+  top: 12%;
+  width: 30%;
+  height: 30%;
+  background-image: url('/images/organizer.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.setup-2fa-bg::after {
+  right: 8%;
+  bottom: 10%;
+  width: 28%;
+  height: 28%;
+  background-image: url('/images/setup2fa.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.auth-bg::after {
+  left: 50%;
+  top: 6%;
+  width: 40%;
+  height: 28%;
+  transform: translateX(-50%);
+  background-image: url('/images/auth-deco.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Slight variation for the global page background extra layer */
+body.page-bg::after {
+  right: 4%;
+  bottom: 4%;
+  width: 28%;
+  height: 28%;
+  background-image: url('/images/global-deco.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.07;
+}
+
+.auth-bg { /* already defined with tint override; ensure frame */ }
+
+
 /* Mint glow */
-.glow-mint { box-shadow: 0 0 60px -10px oklch(0.82 0.18 165 / 0.4); }
+.glow-mint {
+  box-shadow: 0 0 60px -10px oklch(0.82 0.18 165 / 0.4);
+}
 .bg-mesh {
   background-image:
     radial-gradient(at 20% 20%, oklch(0.82 0.18 165 / 0.18) 0px, transparent 50%),
-    radial-gradient(at 80% 60%, oklch(0.55 0.20 280 / 0.15) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, oklch(0.45 0.15 165 / 0.20) 0px, transparent 50%);
+    radial-gradient(at 80% 60%, oklch(0.55 0.2 280 / 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, oklch(0.45 0.15 165 / 0.2) 0px, transparent 50%);
+}
+
+.bg-event-vibrant {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.28), transparent 35%),
+    radial-gradient(circle at 85% 16%, rgba(251, 191, 36, 0.22), transparent 32%),
+    radial-gradient(circle at 80% 82%, rgba(192, 132, 252, 0.2), transparent 38%),
+    radial-gradient(circle at 18% 85%, rgba(45, 212, 191, 0.2), transparent 40%),
+    linear-gradient(160deg, #0b1220 0%, #111a2e 45%, #0a1020 100%),
+    url('/images/page-bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+
+/* Disable fixed background on small screens for performance and proper scrolling */
+@media (max-width: 768px) {
+  body::before,
+  .dashboard-bg,
+  .events-bg,
+  .setup-2fa-bg,
+  .organizer-bg,
+  .bg-event-vibrant {
+    background-attachment: scroll !important;
+    background-position: center top !important;
+  }
+}
+
+/* Mobile-first interaction improvements */
+@media (max-width: 640px) {
+  /* Make tappable targets bigger and easier to hit */
+  button, a[class*="button"], .btn {
+    min-height: 48px !important;
+    min-width: 48px !important;
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+  }
+
+  /* Increase list/tile hit targets */
+  .p-3, .p-4, .p-5 { padding: 14px !important; }
+
+  /* Subtle touch press animation */
+  .touch-press { transition: transform 120ms cubic-bezier(.2,.9,.3,1), box-shadow 120ms; }
+  .touch-press:active { transform: scale(0.985); }
+
+  /* Cards enter with a light slide-up on mobile to feel snappy */
+  .card-animate { animation: cardEnter 420ms cubic-bezier(.2,.9,.3,1); }
+  @keyframes cardEnter { from { transform: translateY(8px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+  /* Toasts: larger, centered, and spaced for mobile reachability */
+  .sonner, .snackbar, .toast {
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 20px !important;
+    max-width: calc(100% - 32px) !important;
+    border-radius: 12px !important;
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  /* Reduce heavy fixed backgrounds for performance */
+  body::before { display: none; }
+}
+
+/* Helper utility for larger touch targets when needed */
+.touch-target { padding: 12px 16px !important; min-height: 48px !important; border-radius: 12px; }
+
+/* Simple skeleton utility */
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 0.9 }
+  50% { opacity: 0.4 }
+  100% { opacity: 0.9 }
+}
+
+.photo-tint {
+  position: relative;
+}
+
+.photo-tint::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.25), rgba(30, 64, 175, 0.2));
+  pointer-events: none;
 }
 .text-gradient {
   background: linear-gradient(135deg, oklch(0.82 0.18 165), oklch(0.65 0.18 200));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Shared smooth UI surface */
+.et-surface {
+  background: color-mix(in oklab, var(--card) 92%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 88%, transparent);
+  border-radius: 1.25rem;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.et-surface:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.28);
+}
+
+.et-soft-scroll {
+  scroll-behavior: smooth;
+}
+
+.et-chip {
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.et-chip:hover {
+  transform: translateY(-1px);
 }
