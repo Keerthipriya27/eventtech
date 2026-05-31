@@ -1,7 +1,7 @@
 const corsHeaders = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "content-type,authorization,apikey" };
 
 async function fetchRegistration(serviceUrl: string, key: string, regId: string) {
-  const url = `${serviceUrl}/rest/v1/registrations?id=eq.${regId}&select=*,events(*),profiles:profiles!registrations_user_id_fkey(*)`; // try to fetch event and profile
+  const url = `${serviceUrl}/rest/v1/registrations?id=eq.${regId}&select=*,events(*)`;
   const resp = await fetch(url, { headers: { apikey: key, Authorization: `Bearer ${key}` } });
   const data = await resp.json();
   return data?.[0] || null;

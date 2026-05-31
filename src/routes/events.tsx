@@ -80,7 +80,16 @@ function EventsList() {
                   <Button size="sm" onClick={async () => {
                     try {
                       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/event-predictor`;
-                      const resp = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event: e }) });
+                      const session = await supabase.auth.getSession();
+                      const token = session?.data?.session?.access_token;
+                      const resp = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          Authorization: token ? `Bearer ${token}` : `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+                        },
+                        body: JSON.stringify({ event: e }),
+                      });
                       const data = await resp.json();
                       if (data?.error) throw new Error(data.error);
                       setPredictions(prev => ({ ...prev, [e.id]: data }));

@@ -5,8 +5,33 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json();
     const tasks = body.tasks || [];
-    const volunteers = body.volunteers || [];
+    const volunteer = body.volunteer || null;
+    const volunteers = Array.isArray(body.volunteers)
+      ? body.volunteers
+      : volunteer
+        ? [volunteer]
+        : [];
     const useAI = body.use_ai || body.mode === 'recommend' || false;
+
+    // Recommendation mode: score tasks for a single volunteer when provided.
+    if (body.mode === 'recommend' && volunteer) {
+      const userSkills = volunteer.skills || [];
+      const assignments = tasks.map((t: any) => {
+        const requiredSkills = t.required_skills || [];
+        const overlap = requiredSkills.filter((s: string) =>
+          userSkills.some((skill: string) => skill.toLowerCase().includes(String(s).toLowerCase()) || String(s).toLowerCase().includes(skill.toLowerCase())),
+        );
+        const score = Math.min(95, 35 + overlap.length * 20 + Math.floor(Math.random() * 15));
+        return {
+          task_id: t.id,
+          volunteer_id: volunteer.id,
+          score,
+          reason: overlap.length ? `Matched on ${overlap.join(', ')}` : 'General fit',
+        };
+      });
+      assignments.sort((a: any, b: any) => b.score - a.score);
+      return new Response(JSON.stringify({ assignments }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
 
     // If AI is requested and key is available, call OpenAI to score and recommend
     const OPENAI_KEY = Deno.env.get('OPENAI_API_KEY');

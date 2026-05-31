@@ -13,6 +13,14 @@ function makeCertificateHTML(name: string, eventTitle: string, date: string) {
   </head><body><div class="cert"><h1>Certificate of Attendance</h1><div class="name">${name}</div><div class="event">Attended: ${eventTitle}</div><div class="date">Issued on ${date}</div></div></body></html>`;
 }
 
+async function ensureBucket(serviceUrl: string, serviceKey: string, bucket: string) {
+  await fetch(`${serviceUrl}/storage/v1/bucket`, {
+    method: 'POST',
+    headers: { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: bucket, name: bucket, public: true }),
+  });
+}
+
 // Upload to Supabase Storage bucket and insert certificate record
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -37,7 +45,7 @@ Deno.serve(async (req) => {
     const uploadUrl = `${SERVICE_URL}/storage/v1/object/${STORAGE_BUCKET}/${encodeURIComponent(path)}`;
 
     // Upload HTML as file
-    const up = await fetch(uploadUrl, {
+    let up = await fetch(uploadUrl, {
       method: 'POST',
       headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'text/html' },
       body: html,
@@ -45,7 +53,18 @@ Deno.serve(async (req) => {
     if (!up.ok) {
       const txt = await up.text();
       console.error('upload failed', up.status, txt);
-      return new Response(JSON.stringify({ error: 'upload failed' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // Try to create the bucket on the fly, then retry once.
+      await ensureBucket(SERVICE_URL, SERVICE_KEY, STORAGE_BUCKET);
+      up = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'text/html' },
+        body: html,
+      });
+      if (!up.ok) {
+        const retryTxt = await up.text();
+        console.error('retry upload failed', up.status, retryTxt);
+        return new Response(JSON.stringify({ ok: true, certificate_html: html, certificate_url: null, upload_error: retryTxt || txt }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
     }
 
     const publicUrl = `${SERVICE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
